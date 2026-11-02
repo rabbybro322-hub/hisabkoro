@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>হিসাব করো — HisabKoro</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{--p:#1677F5;--p2:#0D5FD3;--bg:#F7F9FC;--card:#fff;--tx:#172033;--tx2:#64748B;--bd:#E7ECF3;--ok:#16A36A;--bad:#E5484D;--warn:#E9A23B}
+*{box-sizing:border-box;margin:0}
+body{font-family:'Inter','Hind Siliguri',sans-serif;background:var(--bg);color:var(--tx);font-size:15px}
+#shell{display:flex;min-height:100vh}
+aside{width:236px;background:var(--card);border-right:1px solid var(--bd);padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.logo{font:700 21px 'Hind Siliguri';color:var(--p);padding:4px 10px 18px}.logo small{display:block;font:400 12px Inter;color:var(--tx2)}
+nav button{all:unset;display:flex;gap:11px;align-items:center;width:100%;padding:11px 12px;border-radius:9px;cursor:pointer;color:var(--tx2);font:500 15px 'Hind Siliguri',Inter;box-sizing:border-box}
+nav button:hover{background:var(--bg)}nav button.on{background:#EAF2FE;color:var(--p2)}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.me{margin-top:auto;border-top:1px solid var(--bd);padding-top:14px;display:flex;gap:10px;align-items:center}
+.av{width:38px;height:38px;border-radius:50%;background:#EAF2FE;color:var(--p2);display:grid;place-items:center;font-weight:700;flex-shrink:0}
+.me b{display:block;font-size:14px}.me small{color:var(--tx2)}.me button{all:unset;margin-left:auto;cursor:pointer;color:var(--tx2);padding:6px}
+main{flex:1;padding:28px;max-width:1120px;min-width:0}
+h1{font:700 25px 'Hind Siliguri';margin-bottom:4px}.sub{color:var(--tx2);margin-bottom:22px}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.g2{grid-template-columns:2fr 1fr}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px}
+.card h3{font:600 16px 'Hind Siliguri';margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.stat{display:flex;gap:14px;align-items:center}.stat .l{color:var(--tx2);font-size:14px}.stat .v{font:600 24px Inter;margin-top:4px}
+.chip{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.c-b{background:#E8F0FE;color:var(--p)}.c-g{background:#E3F6EC;color:var(--ok)}.c-r{background:#FDECEC;color:var(--bad)}.c-v{background:#EFE9FD;color:#7C4DDB}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+input,select,button.b{font:inherit;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--tx);min-height:42px}
+input:focus,select:focus{outline:2px solid var(--p);border-color:var(--p)}
+button.b{background:var(--p);color:#fff;border:0;cursor:pointer;font-weight:600}button.b:hover{background:var(--p2)}
+button.b.o{background:#fff;color:var(--p2);border:1px solid var(--bd)}button.b.d{background:#fff;color:var(--bad);border:1px solid var(--bd)}button.b:disabled{opacity:.5}
+.seg button.b{min-height:32px;padding:4px 12px;font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.row>*{flex:1;min-width:120px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--bd)}th{color:var(--tx2);font-weight:500;font-size:13px}
+.r{text-align:right}.empty{text-align:center;color:var(--tx2);padding:28px 10px}
+.tag{padding:2px 10px;border-radius:99px;font-size:12px;background:#EAF2FE;color:var(--p2)}.tag.g{background:#E3F6EC;color:var(--ok)}.tag.r{background:#FDECEC;color:var(--bad)}
+.tx{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}.tx .chip{width:36px;height:36px}.tx .m{flex:1}.tx small{color:var(--tx2)}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.pg button{all:unset;cursor:pointer;border:1px solid var(--bd);border-radius:10px;padding:12px;background:#fff;box-sizing:border-box}.pg button:hover{border-color:var(--p)}
+.pg b{display:block;font-weight:600}.pg span{color:var(--tx2);font-size:13px}
+.auth{min-height:100vh;display:grid;place-items:center;padding:16px}.ac{width:100%;max-width:400px;padding:26px}.ac input{display:block;width:100%;margin-bottom:10px}.ac .logo{font-size:26px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--tx);color:#fff;padding:11px 18px;border-radius:8px;display:none;z-index:9;max-width:90vw}
+@media(max-width:800px){#shell{flex-direction:column}aside{width:100%;height:auto;position:static;flex-direction:row;overflow-x:auto;padding:8px;align-items:center}.logo,.me small,.me b{display:none}.me{margin:0 0 0 auto;border:0;padding:0}nav{display:flex}nav button{white-space:nowrap;width:auto}main{padding:16px}.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="toast"></div>
+<script>
+/* ===== SETUP: paste your Supabase values here (Project Settings > API). Only the anon key; never the service_role key. ===== */
+const SUPABASE_URL='https://nystulakybwwzddfkjgj.supabase.co', SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55c3R1bGFreWJ3d3pkZGZramdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwMDAyNDYsImV4cCI6MjEwNzU3NjI0Nn0.zYeRZjOoydwRc16zpggztchYM_5hx1svvm5X3Ee643o';
+const cfgOk=!SUPABASE_URL.startsWith('YOUR_'), sb=cfgOk?supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+
+const IC={home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',users:'<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7M17 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-6"/>',wallet:'<path d="M3 7h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-3h12M16 14h2"/>',file:'<path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h7M9 17h7"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',coin:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 10c0-2 6-2 6 0s-6 2-6 4 6 2 6 0"/>'};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24">${IC[n]}</svg>`;
+const V=[['dash','ড্যাশবোর্ড','home'],['sale','বিক্রি (POS)','cart'],['prod','পণ্য','box'],['cust','কাস্টমার ও বাকি','users'],['exp','খরচ','wallet']];
+let DB={p:[],c:[],s:[],pay:[],e:[]},shop=null,cart=[],view='dash',chart=null,busy=false,rng=7,saleKey=crypto.randomUUID();
+const $=s=>document.querySelector(s),val=id=>$('#'+id).value.trim();
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>(n<0?'-':'')+'৳'+(Math.abs(n)/100).toLocaleString('en-US',{maximumFractionDigits:2});
+const paisa=v=>{const n=Math.round(parseFloat(v)*100);return isNaN(n)?0:n};
+const day=(d=new Date())=>d.toLocaleDateString('en-CA',{timeZone:'Asia/Dhaka'});
+const sum=(a,f)=>a.reduce((t,x)=>t+f(x),0),empty=t=>`<div class="empty">${t}</div>`;
+const paidOf=s=>sum(DB.pay.filter(p=>p.sid===s.id),p=>p.amt),dueOf=s=>s.total-paidOf(s),custDue=id=>sum(DB.s.filter(s=>s.cid===id),dueOf);
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t.h);t.h=setTimeout(()=>t.style.display='none',3200)}
+const ok=r=>{if(r.error)throw r.error;return r.data};
+const act=async f=>{try{await f()}catch(e){toast(e.message||'সমস্যা হয়েছে, আবার চেষ্টা করুন')}};
+
+/* ---------- Auth (phone + password; phone is stored as a hidden login email) ---------- */
+const normPhone=v=>{const m=v.replace(/\D/g,'').replace(/^880/,'0');return /^01[3-9]\d{8}$/.test(m)?m:null};
+const emailOf=p=>`hk.88${p}@gmail.com`; // hidden login id only; no email is ever sent (Confirm email must stay OFF)
+function authView(mode){$('#root').innerHTML=`<div class="auth"><div class="card ac"><div class="logo" style="padding-bottom:2px">হিসাব করো</div><p class="sub" style="margin-bottom:16px">আপনার ব্যবসার হিসাব, এখন আরও সহজ।</p>
+${cfgOk?'':'<p class="bad" style="margin-bottom:12px">Supabase সেটআপ বাকি। ফাইলের উপরে URL ও anon key বসান।</p>'}
+<div class="row" style="margin-bottom:12px"><button class="b ${mode==='in'?'':'o'}" onclick="authView('in')">লগইন</button><button class="b ${mode==='up'?'':'o'}" onclick="authView('up')">নতুন অ্যাকাউন্ট</button></div>
+${mode==='up'?'<input id="an" placeholder="দোকানের নাম"><input id="ao" placeholder="আপনার নাম">':''}
+<input id="ap" placeholder="মোবাইল নম্বর (01XXXXXXXXX)" inputmode="tel"><input id="aw" type="password" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)">
+<button class="b" style="width:100%" id="ab" onclick="submitAuth('${mode}')">${mode==='up'?'অ্যাকাউন্ট খুলুন':'লগইন করুন'}</button>
+<p class="sub" style="margin:12px 0 0;font-size:13px">পাসওয়ার্ড ভুলে গেলে রিসেট করার জন্য SMS কোড পরে যোগ হবে। তাই পাসওয়ার্ড মনে রাখুন।</p></div></div>`}
+function submitAuth(mode){act(async()=>{if(!cfgOk)throw{message:'আগে Supabase সেটআপ করুন'};
+ const ph=normPhone($('#ap').value),pw=$('#aw').value;if(!ph)throw{message:'সঠিক মোবাইল নম্বর দিন'};if(pw.length<6)throw{message:'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে'};
+ $('#ab').disabled=true;
+ try{if(mode==='up'){const sn=val('an'),on=val('ao');if(!sn||!on)throw{message:'দোকানের নাম ও আপনার নাম দিন'};
+  const {data,error}=await sb.auth.signUp({email:emailOf(ph),password:pw,options:{data:{shop_name:sn,owner_name:on,phone:ph}}});
+  if(error)throw{message:/registered/i.test(error.message)?'এই নম্বরে আগেই অ্যাকাউন্ট আছে':error.message};
+  if(!data.session)throw{message:'Supabase-এ Authentication > Providers > Email থেকে "Confirm email" বন্ধ করুন'};
+  await enter(data.user)}
+ else{const {data,error}=await sb.auth.signInWithPassword({email:emailOf(ph),password:pw});if(error)throw{message:'নম্বর বা পাসওয়ার্ড ভুল'};await enter(data.user)}}
+ finally{const b=$('#ab');if(b)b.disabled=false}})}
+async function enter(user){let sh=ok(await sb.from('shops').select('*').limit(1));
+ if(!sh.length){const m=user.user_metadata||{};sh=[ok(await sb.from('shops').insert({name:m.shop_name||'আমার দোকান',owner_name:m.owner_name||'মালিক',phone:m.phone||''}).select().single())]}
+ shop=sh[0];await loadAll();$('#root').innerHTML=`<div id="shell"><aside><div class="logo">হিসাব করো<small>HisabKoro</small></div><nav id="nav"></nav>
+ <div class="me"><div class="av">${esc(shop.owner_name.slice(0,1))}</div><div><b>${esc(shop.owner_name)}</b><small>${esc(shop.name)}</small></div><button title="লগআউট" onclick="logout()">${ic('out')}</button></div></aside><main id="app"></main></div>`;go('dash')}
+async function logout(){await sb.auth.signOut();DB={p:[],c:[],s:[],pay:[],e:[]};shop=null;cart=[];authView('in')}
+async function loadAll(){const q=t=>sb.from(t).select('*').eq('shop_id',shop.id).order('created_at');
+ const [p,c,s,pay,e]=(await Promise.all(['products','customers','sales','payments','expenses'].map(q))).map(ok);const ts=r=>+new Date(r.created_at);
+ DB={p,c,s:s.map(r=>({...r,date:r.day,ts:ts(r)})),pay:pay.map(r=>({...r,ts:ts(r)})),e:e.map(r=>({...r,date:r.day,ts:ts(r)}))}}
+async function refresh(v){await loadAll();go(v)}
+
+/* ---------- Views ---------- */
+function go(v){view=v;$('#nav').innerHTML=V.map(([k,n,i])=>`<button class="${k===v?'on':''}" onclick="go('${k}')">${ic(i)}${n}</button>`).join('');
+ if(chart){chart.destroy();chart=null}$('#app').innerHTML=R[v]();if(v==='dash')drawChart();if(v==='sale')posList()}
+const R={
+dash(){const td=day(),ts=DB.s.filter(s=>s.date===td),sales=sum(ts,s=>s.total),net=sales-sum(ts,s=>s.cogs)-sum(DB.e.filter(e=>e.date===td),e=>e.amt),ex=sum(DB.e.filter(e=>e.date===td),e=>e.amt),due=sum(DB.s,dueOf),low=DB.p.filter(p=>p.stock<=p.min);
+ const rec=[...DB.s.map(s=>({d:s.ts,t:`বিক্রি #${s.no}`,s:`${s.items.length}টি পণ্য`,a:fmt(s.total),k:dueOf(s)>0?'বাকি':'পরিশোধিত',c:dueOf(s)>0?'r':'g',i:'cart',ch:'c-g'})),...DB.pay.filter(p=>p.kind==='collect').map(p=>({d:p.ts,t:'বাকি আদায়',s:esc((DB.c.find(c=>c.id===p.cid)||{}).name),a:fmt(p.amt),k:'প্রাপ্ত',c:'g',i:'users',ch:'c-b'})),...DB.e.map(e=>({d:e.ts,t:'খরচ',s:esc(e.cat),a:fmt(e.amt),k:'খরচ',c:'r',i:'wallet',ch:'c-r'}))].sort((a,b)=>b.d-a.d).slice(0,6);
+ return `<div class="row" style="align-items:flex-start;justify-content:space-between;margin:0"><div style="flex:1"><h1>স্বাগতম, ${esc(shop.owner_name)}!</h1><p class="sub">${esc(shop.name)} · আজকের সারসংক্ষেপ</p></div></div>
+ <div class="grid g4" style="margin-bottom:16px">
+ <div class="card stat"><div class="chip c-b">${ic('cart')}</div><div><div class="l">আজকের বিক্রি</div><div class="v">${fmt(sales)}</div></div></div>
+ <div class="card stat"><div class="chip c-g">${ic('coin')}</div><div><div class="l">আজকের নিট লাভ</div><div class="v ${net<0?'bad':'ok'}">${fmt(net)}</div></div></div>
+ <div class="card stat"><div class="chip c-r">${ic('file')}</div><div><div class="l">মোট বাকি</div><div class="v ${due>0?'bad':''}">${fmt(due)}</div></div></div>
+ <div class="card stat"><div class="chip c-v">${ic('wallet')}</div><div><div class="l">আজকের খরচ</div><div class="v">${fmt(ex)}</div></div></div></div>
+ <div class="grid g2" style="margin-bottom:16px"><div class="card"><h3>বিক্রির চিত্র<span class="seg">${[7,30].map(n=>`<button class="b ${rng===n?'':'o'}" onclick="rng=${n};go('dash')">${n} দিন</button>`).join(' ')}</span></h3><canvas id="ch" height="130"></canvas></div>
+ <div class="card"><h3>স্টক কম (${low.length})</h3>${low.length?low.map(p=>`<div class="tx"><div class="m"><b>${esc(p.name)}</b></div><b class="${p.stock<=0?'bad':'warn'}">${p.stock<=0?'শেষ':'মাত্র '+p.stock+' '+esc(p.unit)}</b></div>`).join(''):empty('কোনো পণ্যের স্টক কম নেই')}</div></div>
+ <div class="card"><h3>সাম্প্রতিক লেনদেন</h3>${rec.length?rec.map(r=>`<div class="tx"><div class="chip ${r.ch}">${ic(r.i)}</div><div class="m"><b>${r.t}</b><br><small>${r.s}</small></div><span>${r.a}</span><span class="tag ${r.c==='g'?'g':r.c==='r'?'r':''}">${r.k}</span></div>`).join(''):empty('এখনো কোনো লেনদেন নেই। “বিক্রি (POS)” থেকে প্রথম বিক্রি করুন।')}</div>`},
+prod(){return `<h1>পণ্য</h1><p class="sub">পণ্য যোগ করুন ও স্টক দেখুন</p><div class="card" style="margin-bottom:16px">
+ <div class="row"><input id="pn" placeholder="পণ্যের নাম"><select id="pu"><option>পিস</option><option>কেজি</option><option>গ্রাম</option><option>লিটার</option><option>প্যাকেট</option><option>বক্স</option><option>ডজন</option></select></div>
+ <div class="row"><input id="pb" type="number" min="0" step="0.01" placeholder="ক্রয়মূল্য ৳"><input id="ps" type="number" min="0" step="0.01" placeholder="বিক্রয়মূল্য ৳"><input id="pq" type="number" min="0" step="any" placeholder="বর্তমান স্টক"><input id="pm" type="number" min="0" step="any" placeholder="সর্বনিম্ন স্টক"></div>
+ <button class="b" onclick="addProd()">পণ্য যোগ করুন</button></div>
+ <div class="card">${DB.p.length?`<table><tr><th>নাম</th><th>ক্রয়</th><th>বিক্রয়</th><th>স্টক</th><th></th></tr>${DB.p.map(p=>`<tr><td>${esc(p.name)}</td><td>${fmt(p.buy)}</td><td>${fmt(p.sell)}</td><td class="${p.stock<=p.min?'bad':''}">${p.stock} ${esc(p.unit)}</td><td class="r"><button class="b o" onclick="adjStock('${p.id}')">স্টক যোগ</button> <button class="b d" onclick="delProd('${p.id}')">মুছুন</button></td></tr>`).join('')}</table>`:empty('কোনো পণ্য নেই। উপরের ফর্ম থেকে প্রথম পণ্য যোগ করুন।')}</div>`},
+sale(){const t=cartTotals();return `<h1>বিক্রি (POS)</h1><p class="sub">পণ্য বেছে নিন, তারপর বিল তৈরি করুন</p><div class="grid g2">
+ <div class="card"><input id="q" placeholder="পণ্য খুঁজুন" oninput="posList()" style="width:100%;margin-bottom:12px"><div class="pg" id="pl"></div></div>
+ <div class="card"><h3>কার্ট</h3>${cart.length?`<table>${cart.map((c,i)=>`<tr><td>${esc(c.name)}<br><small>${fmt(c.price)}</small></td><td><input type="number" min="0.001" step="any" value="${c.qty}" style="width:76px" onchange="setQty(${i},this.value)"></td><td class="r"><button class="b d" onclick="cart.splice(${i},1);go('sale')">✕</button></td></tr>`).join('')}</table>`:empty('কার্ট খালি')}
+ <div class="row" style="margin-top:12px"><input id="sd" type="number" min="0" step="0.01" placeholder="ছাড় ৳" oninput="upd()"><input id="sp" type="number" min="0" step="0.01" placeholder="পরিশোধ ৳" oninput="upd()"></div>
+ <div class="row"><select id="sc"><option value="">কাস্টমার (বাকির জন্য আবশ্যক)</option>${DB.c.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select><select id="sm"><option>নগদ</option><option>বিকাশ</option><option>নগদ (Nagad)</option><option>ব্যাংক</option><option>অন্যান্য</option></select></div>
+ <p>সাবটোটাল: <b>${fmt(t.sub)}</b></p><p>মোট: <b id="t2">${fmt(t.sub)}</b></p><p>বাকি: <b id="t3" class="bad">${fmt(t.sub)}</b></p>
+ <button class="b" style="width:100%;margin-top:12px" id="sb" onclick="doSale()">বিক্রি সম্পন্ন করুন</button></div></div>`},
+cust(){const due=sum(DB.s,dueOf);return `<h1>কাস্টমার ও বাকি খাতা</h1><p class="sub">মোট বাকি: <b class="${due?'bad':''}">${fmt(due)}</b></p><div class="card" style="margin-bottom:16px"><div class="row"><input id="cn" placeholder="কাস্টমারের নাম"><input id="cp" placeholder="ফোন নম্বর" inputmode="tel"><button class="b" style="flex:0 0 auto" onclick="addCust()">যোগ করুন</button></div></div>
+ <div class="card">${DB.c.length?`<table><tr><th>নাম</th><th>ফোন</th><th>বাকি</th><th></th></tr>${DB.c.map(c=>{const d=custDue(c.id);return `<tr><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td class="${d?'bad':''}">${fmt(d)}</td><td class="r">${d>0?`<button class="b" onclick="collect('${c.id}')">টাকা আদায়</button>`:''}</td></tr>`}).join('')}</table>`:empty('কোনো কাস্টমার নেই। প্রথম কাস্টমার যোগ করুন।')}</div>`},
+exp(){return `<h1>খরচ</h1><p class="sub">দোকানের সব খরচ লিখে রাখুন</p><div class="card" style="margin-bottom:16px"><div class="row"><select id="ec">${['দোকান ভাড়া','বিদ্যুৎ বিল','পানির বিল','কর্মচারীর বেতন','পরিবহন','পণ্য ক্রয়','রক্ষণাবেক্ষণ','অন্যান্য খরচ'].map(x=>`<option>${x}</option>`).join('')}</select><input id="ea" type="number" min="0" step="0.01" placeholder="পরিমাণ ৳"><input id="ed" type="date" value="${day()}"></div><div class="row"><input id="en" placeholder="বিবরণ (ঐচ্ছিক)"><button class="b" style="flex:0 0 auto" onclick="addExp()">খরচ যোগ করুন</button></div></div>
+ <div class="card">${DB.e.length?`<table><tr><th>তারিখ</th><th>ধরন</th><th>বিবরণ</th><th class="r">পরিমাণ</th><th></th></tr>${[...DB.e].sort((a,b)=>b.ts-a.ts).map(e=>`<tr><td>${e.date}</td><td>${esc(e.cat)}</td><td>${esc(e.note)}</td><td class="r">${fmt(e.amt)}</td><td class="r"><button class="b d" onclick="delExp('${e.id}')">মুছুন</button></td></tr>`).join('')}</table>`:empty('এখনো কোনো খরচ নেই।')}</div>`}
+};
+function drawChart(){const ds=[...Array(rng)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-rng+1+i);return day(d)});
+ chart=new Chart($('#ch'),{type:'line',data:{labels:ds.map(d=>d.slice(5)),datasets:[{data:ds.map(d=>sum(DB.s.filter(s=>s.date===d),s=>s.total)/100),borderColor:'#1677F5',backgroundColor:'rgba(22,119,245,.08)',fill:true,tension:.3}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}})}
+
+/* ---------- Actions (every write goes to Supabase; sales and due collection use server-side functions) ---------- */
+const addProd=()=>act(async()=>{const name=val('pn'),buy=paisa(val('pb')),sell=paisa(val('ps')),stock=parseFloat(val('pq'))||0,min=parseFloat(val('pm'))||0;
+ if(!name)throw{message:'পণ্যের নাম লিখুন'};if(sell<=0)throw{message:'বিক্রয়মূল্য ০-এর বেশি হতে হবে'};if(stock<0||min<0)throw{message:'স্টক ঋণাত্মক হতে পারে না'};
+ ok(await sb.from('products').insert({shop_id:shop.id,name,unit:$('#pu').value,buy,sell,stock,min}));toast('পণ্য যোগ হয়েছে');await refresh('prod')});
+const delProd=id=>confirm('এই পণ্য মুছবেন? পুরোনো বিক্রির হিসাব অপরিবর্তিত থাকবে।')&&act(async()=>{ok(await sb.from('products').delete().eq('id',id));await refresh('prod')});
+const adjStock=id=>act(async()=>{const p=DB.p.find(x=>x.id===id),n=parseFloat(prompt(`${p.name}: কত ${p.unit} যোগ করবেন?`));if(!(n>0))return;ok(await sb.from('products').update({stock:p.stock+n}).eq('id',id));await refresh('prod')});
+const addCust=()=>act(async()=>{const name=val('cn');if(!name)throw{message:'নাম লিখুন'};ok(await sb.from('customers').insert({shop_id:shop.id,name,phone:val('cp')}));await refresh('cust')});
+const addExp=()=>act(async()=>{const amt=paisa(val('ea'));if(amt<=0)throw{message:'সঠিক পরিমাণ লিখুন'};if(!val('ed'))throw{message:'তারিখ দিন'};
+ ok(await sb.from('expenses').insert({shop_id:shop.id,cat:$('#ec').value,amt,day:val('ed'),note:val('en')}));toast('খরচ যোগ হয়েছে');await refresh('exp')});
+const delExp=id=>confirm('এই খরচ মুছবেন?')&&act(async()=>{ok(await sb.from('expenses').delete().eq('id',id));await refresh('exp')});
+function posList(){const el=$('#pl');if(!el)return;const q=(($('#q')||{}).value||'').toLowerCase();el.innerHTML=DB.p.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<button onclick="addCart('${p.id}')"><b>${esc(p.name)}</b><span>${fmt(p.sell)} · স্টক ${p.stock}</span></button>`).join('')||empty(DB.p.length?'কিছু পাওয়া যায়নি':'আগে “পণ্য” পাতা থেকে পণ্য যোগ করুন')}
+function addCart(id){const p=DB.p.find(x=>x.id===id),c=cart.find(x=>x.id===id);if(c)c.qty++;else cart.push({id,name:p.name,price:p.sell,qty:1});go('sale')}
+function setQty(i,v){const n=parseFloat(v);if(n>0)cart[i].qty=n;go('sale')}
+const cartTotals=()=>({sub:Math.round(sum(cart,c=>c.price*c.qty))});
+function upd(){const s=cartTotals().sub,d=paisa(val('sd')),p=paisa(val('sp'));$('#t2').textContent=fmt(s-d);$('#t3').textContent=fmt(s-d-p)}
+const doSale=()=>{if(busy)return;act(async()=>{if(!cart.length)throw{message:'কার্ট খালি'};busy=true;$('#sb').disabled=true;
+ try{ok(await sb.rpc('create_sale',{p_shop:shop.id,p_cid:$('#sc').value||null,p_items:cart.map(c=>({id:c.id,qty:c.qty})),p_disc:paisa(val('sd')),p_paid:paisa(val('sp')),p_method:$('#sm').value,p_key:saleKey}));
+  cart=[];saleKey=crypto.randomUUID();toast('বিক্রি সম্পন্ন হয়েছে');await refresh('sale')}
+ finally{busy=false;const b=$('#sb');if(b)b.disabled=false}})};
+const collect=cid=>act(async()=>{const due=custDue(cid),n=paisa(prompt(`কত টাকা আদায় হলো? (বাকি ${fmt(due)})`));if(n<=0)return;if(n>due)throw{message:'আদায় বাকির চেয়ে বেশি হতে পারে না'};
+ ok(await sb.rpc('collect_due',{p_shop:shop.id,p_cid:cid,p_amt:n}));toast('টাকা আদায় রেকর্ড হয়েছে');await refresh('cust')});
+
+/* ---------- Boot ---------- */
+act(async()=>{if(!cfgOk)return authView('in');const {data}=await sb.auth.getSession();data.session?await enter(data.session.user):authView('in')});
+</script>
+</body>
+</html>
